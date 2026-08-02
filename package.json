@@ -7,7 +7,6 @@
     "dev": "vite",
     "build": "vite build && vue-tsc --noEmit",
     "start": "bun run src/server/dev.ts",
-    "vercel-build": "bun run build:client",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"
