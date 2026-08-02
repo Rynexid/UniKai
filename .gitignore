@@ -39,3 +39,5 @@ bun-debug.log*
 .temp/
 .cache/
 coverage/
+.vercel
+.env*
