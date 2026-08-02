@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { dash } from "@better-auth/infra";
 import { db } from "../database";
 import { user, session, account, verification } from "../../db";
 
@@ -60,6 +61,9 @@ export const auth = betterAuth({
       maxAge: 60 * 5, // 5 menit - di rentang ini, validasi session TIDAK query ke DB
     },
   },
+
+  // --- Plugin Dashboard Better Auth (dash.better-auth.com) ---
+  plugins: [dash()],
 
   // --- Keamanan ---
   advanced: {
