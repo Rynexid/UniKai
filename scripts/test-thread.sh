@@ -10,7 +10,7 @@ trap 'rm -f "$COOKIE_JAR"' EXIT
 
 EMAIL="manual-test-$(date +%s)@example.com"
 PASSWORD="Rahasia123!"
-TITLE="Diskusi $($RANDOM)"
+TITLE="Diskusi uji coba $RANDOM"
 CONTENT="Ini adalah konten uji coba thread manual untuk verifikasi endpoint /api/discussions/threads. Harus >= 10 karakter."
 CATEGORY=""   # kosongkan pakai category default (general), atau set misal: programming
 
