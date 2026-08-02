@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && vue-tsc --noEmit",
+    "build": "vite build && vue-tsc --noEmit && bun build src/server/vercel.ts --target=node --format=esm --outfile=api/index.js",
+    "build:api": "bun build src/server/vercel.ts --target=node --format=esm --outfile=api/index.js",
     "start": "bun run src/server/dev.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
