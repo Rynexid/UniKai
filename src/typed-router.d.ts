@@ -30,6 +30,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/discussions/create': RouteRecordInfo<
+      '/discussions/create',
+      '/discussions/create',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/login': RouteRecordInfo<
       '/login',
       '/login',
@@ -67,6 +74,12 @@ declare module 'vue-router/auto-routes' {
     'src/app/index.vue': {
       routes:
         | '/'
+      views:
+        | never
+    }
+    'src/app/discussions/create.vue': {
+      routes:
+        | '/discussions/create'
       views:
         | never
     }
