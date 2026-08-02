@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { MarkdownEditor } from "@/components/ui/markdown-editor";
+import { TagsInput } from "@/components/ui/tags-input";
 import type { CommunityCategory } from "@/features/communities/queries";
 import {
   CheckCircle,
@@ -31,7 +32,20 @@ const form = ref({
   title: "",
   content: "",
   communitySlug: "",
+  tags: [] as string[],
+  labels: [] as string[],
 });
+
+const tagSuggestions = ref<string[]>([]);
+const labelPresets = [
+  "Official",
+  "Verified",
+  "Solved",
+  "Featured",
+  "Hot",
+  "Important",
+];
+const TAG_MAX = 5;
 
 const errors = ref<Record<string, string | undefined>>({});
 const isPublishing = ref(false);
@@ -76,6 +90,33 @@ async function loadCommunities() {
   }
 }
 
+// Saran tag (bisa diganti jadi /api/tags bila backend menyediakan).
+const FALLBACK_TAG_SUGGESTIONS = [
+  "vue",
+  "typescript",
+  "react",
+  "rust",
+  "docker",
+  "anime",
+  "gaming",
+  "ai",
+  "design",
+  "linux",
+];
+async function loadTagSuggestions() {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/tags`, {
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error("no api");
+    tagSuggestions.value = ((await res.json()) as { name: string }[]).map(
+      (t) => t.name,
+    );
+  } catch {
+    tagSuggestions.value = FALLBACK_TAG_SUGGESTIONS;
+  }
+}
+
 const selectedCommunity = computed(() =>
   communities.value.find((c) => c.slug === form.value.communitySlug),
 );
@@ -100,7 +141,7 @@ function restoreDraft() {
 
 function clearDraft() {
   localStorage.removeItem(DRAFT_KEY);
-  form.value = { title: "", content: "", communitySlug: "" };
+  form.value = { title: "", content: "", communitySlug: "", tags: [], labels: [] };
 }
 
 watch(() => form.value.title, saveDraft, { immediate: true });
@@ -127,10 +168,16 @@ function validate(): boolean {
 async function publish() {
   if (!validate()) return;
   isPublishing.value = true;
-  const payload = {
+  const payload: {
+    title: string;
+    content: string;
+    categorySlug?: string;
+    tags?: string[];
+  } = {
     title: form.value.title.trim(),
     content: form.value.content,
     categorySlug: form.value.communitySlug,
+    tags: form.value.tags,
   };
   try {
     const res = await fetch(
@@ -163,6 +210,7 @@ if (!userStore.isAuthenticated) {
 } else {
   restoreDraft();
   loadCommunities();
+  loadTagSuggestions();
 }
 
 onBeforeUnmount(() => saveDraft());
@@ -269,6 +317,37 @@ onBeforeUnmount(() => saveDraft());
             min-h-40
           />
           <p v-if="errors.content" class="text-sm text-destructive">{{ errors.content }}</p>
+        </div>
+
+        <div class="space-y-2">
+          <Label>Tag (opsional, maks {{ TAG_MAX }})</Label>
+          <TagsInput
+            v-model="form.tags"
+            placeholder="Ketik & tekan Enter/spasi…"
+            :max="TAG_MAX"
+            :delimiter="/[ ,]/"
+            :suggestions="tagSuggestions"
+            allow-new
+          />
+          <p class="text-xs text-muted-foreground">
+            {{ form.tags.length }}/{{ TAG_MAX }} tag dipilih. Saran:
+            <span v-if="tagSuggestions.length">{{ tagSuggestions.join(", ") }}</span>
+            <span v-else>belum ada saran</span>
+          </p>
+        </div>
+
+        <div class="space-y-2">
+          <Label>Label (read-only)</Label>
+          <TagsInput
+            v-model="form.labels"
+            placeholder="Label dikelola moderator…"
+            :suggestions="labelPresets"
+            :max="10"
+            disabled
+          />
+          <p class="text-xs text-muted-foreground">
+            Label dikelola moderator/admin. Ini hanya pratinjau; label akan diterapkan oleh moderator setelah review.
+          </p>
         </div>
 
         <div
