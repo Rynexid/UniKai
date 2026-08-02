@@ -21,7 +21,7 @@ import CreateThreadDialog from "@/features/discussions/components/CreateThreadDi
 import { useThreads } from "@/features/discussions/composables/useThreads";
 import { useCommunities } from "@/features/communities/composables/useCommunities";
 import { HUE_CLASSES } from "@/features/communities/data/communities";
-import { formatCompactNumber, formatRelativeTime } from "@/lib/utils";
+import { formatCompactNumber } from "@/lib/utils";
 import { useUserStore } from "@/stores/user.store";
 import type { ThreadListItem } from "@/features/discussions/composables/useThreads";
 
@@ -114,14 +114,6 @@ const popularThreads = computed(() =>
   [...threads.value]
     .sort((a, b) => b.viewCount - a.viewCount)
     .slice(0, 5),
-);
-
-const totalCommunityThreads = computed(() =>
-  chips.value.reduce((sum, chip) => sum + chip.threadCount, 0),
-);
-
-const totalViews = computed(() =>
-  threads.value.reduce((sum, thread) => sum + thread.viewCount, 0),
 );
 
 const showLoadMore = computed(
