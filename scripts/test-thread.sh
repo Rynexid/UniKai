@@ -27,7 +27,9 @@ curl -s -m 15 -b "$COOKIE_JAR" -c "$COOKIE_JAR" "$BASE_URL/api/auth/get-session"
 echo
 
 echo "==> 3. POST /api/discussions/threads"
-BODY="{\"title\":\"$TITLE\",\"content\":\"$CONTENT\"$( [ -n "$CATEGORY" ] && echo ",\"categorySlug\":\"$CATEGORY\"" )}"
+EXTRA=""
+if [ -n "$CATEGORY" ]; then EXTRA=",\"categorySlug\":\"$CATEGORY\""; fi
+BODY="{\"title\":\"$TITLE\",\"content\":\"$CONTENT\"$EXTRA}"
 curl -s -m 15 -b "$COOKIE_JAR" -c "$COOKIE_JAR" -X POST "$BASE_URL/api/discussions/threads" \
   -H 'content-type: application/json' \
   -d "$BODY" -w "\nHTTP %{http_code}\n"
