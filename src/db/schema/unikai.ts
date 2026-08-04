@@ -14,6 +14,7 @@ import {
   uniqueIndex,
   jsonb,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { user } from "./auth";
 import { threads } from "./threads";
 
@@ -133,6 +134,10 @@ export const profiles = unikaiSchema.table(
   }),
 );
 
+export const profilesRelations = relations(profiles, ({ one }) => ({
+  user: one(user, { fields: [profiles.userId], references: [user.id] }),
+}));
+
 export const follows = unikaiSchema.table(
   "follows",
   {
@@ -217,6 +222,10 @@ export const reports = unikaiSchema.table(
     statusIdx: index("reports_status_idx").on(table.status),
   }),
 );
+
+export const reportsRelations = relations(reports, ({ one }) => ({
+  reporter: one(user, { fields: [reports.reporterId], references: [user.id] }),
+}));
 
 /* ------------------------------ PLATFORM ------------------------------ */
 

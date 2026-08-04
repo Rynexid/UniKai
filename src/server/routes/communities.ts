@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { getCategories } from "../../../features/communities/queries";
+import { getCategories } from "../../features/communities/queries";
 
 const router = new Hono();
 

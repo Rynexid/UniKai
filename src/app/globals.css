@@ -1,0 +1,10 @@
+@import "../assets/main.css";
+
+@keyframes featured-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}

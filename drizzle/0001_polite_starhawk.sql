@@ -1,0 +1,1 @@
+ALTER TABLE "threads"."threads" ADD COLUMN "featured" boolean DEFAULT false NOT NULL;

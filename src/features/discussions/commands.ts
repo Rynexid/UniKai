@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "../../infrastructure/database";
-import { threads, categories } from "../../db";
+import { threads, comments, categories } from "../../db";
 import { NotFoundError } from "../../types/errors";
 
 export const createThreadSchema = z.object({
@@ -48,4 +48,54 @@ export async function createThread(
     .returning();
 
   return thread as unknown as CreatedThread;
+}
+
+export const createCommentSchema = z.object({
+  content: z.string().min(2).max(5000),
+  parentId: z.string().uuid().optional(),
+});
+
+export type CreateCommentInput = z.infer<typeof createCommentSchema>;
+
+export interface CreatedComment {
+  id: string;
+  content: string;
+  createdAt: string;
+  threadId: string;
+  userId: string;
+  parentId: string | null;
+}
+
+export async function createComment(
+  input: CreateCommentInput & { threadSlug: string },
+  userId: string,
+): Promise<CreatedComment> {
+  const thread = await db.query.threads.findFirst({
+    where: eq(threads.slug, input.threadSlug),
+    columns: { id: true },
+  });
+  if (!thread) throw new NotFoundError("Thread tidak ditemukan.");
+
+  if (input.parentId) {
+    const parent = await db.query.comments.findFirst({
+      where: and(
+        eq(comments.id, input.parentId),
+        eq(comments.threadId, thread.id),
+      ),
+      columns: { id: true },
+    });
+    if (!parent) throw new NotFoundError("Komentar induk tidak ditemukan.");
+  }
+
+  const [comment] = await db
+    .insert(comments)
+    .values({
+      content: input.content,
+      threadId: thread.id,
+      userId,
+      parentCommentId: input.parentId ?? null,
+    })
+    .returning();
+
+  return comment as unknown as CreatedComment;
 }

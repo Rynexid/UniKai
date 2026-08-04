@@ -9,6 +9,7 @@ import {
   timestamp,
   uuid,
   integer,
+  boolean,
   index,
   uniqueIndex,
   type AnyPgColumn,
@@ -29,6 +30,7 @@ export const threads = threadsSchema.table(
     slug: text("slug").notNull(),
     content: text("content").notNull(),
     status: threadStatusEnum("status").notNull().default("open"),
+    featured: boolean("featured").notNull().default(false),
     viewCount: integer("view_count").notNull().default(0),
     userId: text("user_id")
       .notNull()

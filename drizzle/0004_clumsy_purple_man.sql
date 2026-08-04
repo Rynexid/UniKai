@@ -1,0 +1,1 @@
+ALTER TABLE "dms"."dm_messages" ADD COLUMN "image_url" text;

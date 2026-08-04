@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { dash } from "@better-auth/infra";
 import { db } from "../database";
 import { user, session, account, verification } from "../../db";
+import { ensureProfileWithUsername } from "../../features/users/usernames";
 
 /**
  * Instance Better Auth tunggal, di-share ke seluruh route API.
@@ -20,6 +21,18 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: false, // set true di production + tambahkan emailVerification hook
     minPasswordLength: 8,
+  },
+
+  // --- Custom field: role (sudo / admin / mod / warga) ---
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "warga",
+        input: false, // tidak bisa diubah lewat API sign-up
+      },
+    },
   },
 
   // --- OAuth Social Login ---
@@ -59,6 +72,23 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: true, // simpan payload session di cookie terenkripsi
       maxAge: 60 * 5, // 5 menit - di rentang ini, validasi session TIDAK query ke DB
+    },
+  },
+
+  // --- Hook DB: buat username publik otomatis saat user baru mendaftar ---
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (createdUser) => {
+          // Username diambil dari nama (username Discord saat OAuth / nama saat email).
+          // Gagal diam-diam agar pendaftaran tidak terblokir bila terjadi konflik.
+          try {
+            await ensureProfileWithUsername(createdUser);
+          } catch {
+            // abaikan; profil bisa dibuat belakangan lewat edit profil
+          }
+        },
+      },
     },
   },
 
