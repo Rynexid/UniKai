@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Compass, Home, Mail, Plus, Shield, Sun, Moon, User } from "lucide-react";
+import { Compass, Home, Plus, Shield, Sun, Moon, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -42,7 +42,7 @@ export default function SiteBottomNav() {
       aria-label="Navigasi bawah"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/90 backdrop-blur-md lg:hidden"
     >
-      <div className="mx-auto grid h-16 max-w-lg grid-cols-6 items-center px-2">
+      <div className="mx-auto grid h-16 max-w-lg grid-cols-5 items-center px-2">
         <Link href="/" className={itemCls(pathname === "/")}>
           <Home className="h-5 w-5" />
           Beranda
@@ -63,15 +63,12 @@ export default function SiteBottomNav() {
           </Link>
         </div>
 
-        <NotificationsPopover
-          showLabel
-          className="items-center justify-center text-[10px] font-medium"
-        />
-
-        <Link href="/messages" className={itemCls(pathname.startsWith("/messages"))}>
-          <Mail className="h-5 w-5" />
-          Pesan
-        </Link>
+        {user && (
+          <NotificationsPopover
+            showLabel
+            className="items-center justify-center text-[10px] font-medium"
+          />
+        )}
 
         {user ? (
           <DropdownMenu>
@@ -125,9 +122,9 @@ export default function SiteBottomNav() {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <Link href="/login" className={itemCls(false)}>
+          <Link href="/register" className={itemCls(false)}>
             <User className="h-5 w-5" />
-            Masuk
+            Daftar
           </Link>
         )}
       </div>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Moon, Plus, Search, Shield, Sun, UserCircle, Mail } from "lucide-react";
+import { Moon, Plus, Search, Shield, Sun, UserCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,31 +69,21 @@ export default function SiteNav() {
             <Search className="h-5 w-5" />
           </Button>
 
-          <Button
-            size="sm"
-            className="hidden md:inline-flex"
-            render={
-              <Link href="/discussions/create">
-                <Plus className="h-4 w-4" />
-                Buat Diskusi
-              </Link>
-            }
-          />
+           <Button
+             size="sm"
+             className="hidden md:inline-flex"
+             nativeButton={false}
+             render={
+                <Link href="/discussions/create">
+                  <Plus className="h-4 w-4" />
+                  Buat Diskusi
+                </Link>
+              }
+           />
 
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            aria-label="Pesan"
-            className="hidden lg:inline-flex"
-            render={
-              <Link href="/messages">
-                <Mail className="h-5 w-5" />
-              </Link>
-            }
-          />
-
-          <NotificationsPopover className="hidden h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-foreground lg:flex" />
+           {user && (
+            <NotificationsPopover className="hidden h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-foreground lg:flex" />
+          )}
 
           {user ? (
             <DropdownMenu>
@@ -143,12 +133,7 @@ export default function SiteNav() {
             </DropdownMenu>
           ) : (
             <div className="hidden items-center gap-2 lg:flex">
-              <Button
-                variant="outline"
-                size="sm"
-                render={<Link href="/login">Masuk</Link>}
-              />
-              <Button size="sm" render={<Link href="/register">Daftar</Link>} />
+              <Button size="sm" nativeButton={false} render={<Link href="/register">Daftar</Link>} />
             </div>
           )}
         </div>
