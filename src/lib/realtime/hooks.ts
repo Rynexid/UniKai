@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Message, RealtimeChannel } from "ably";
-import { getRealtimeClient } from "./client";
+import { getRealtimeClient, syncRealtimeWithAuth } from "./client";
 import { PRESENCE_THREAD_CHANNEL } from "@/server/lib/ably/channels";
+import { useSession } from "@/lib/auth-client";
 
 /**
  * Hook realtime ringan untuk Ably Pub/Sub.
@@ -316,4 +317,19 @@ export function useRealtimeReady(): boolean {
     };
   }, []);
   return ready;
+}
+
+/**
+ * Sinkronkan singleton Ably client dengan state auth.
+ * Ketika userId berubah (login/logout), singleton lama ditutup agar
+ * clientId tidak bermismatch dengan token baru di /api/ably/token.
+ * Mount sekali di layout agar selalu aktip.
+ */
+export function useAuthRealtimeSync(): void {
+  const { data: session } = useSession();
+  const userId = session?.user?.id ?? null;
+
+  useEffect(() => {
+    syncRealtimeWithAuth(userId);
+  }, [userId]);
 }
